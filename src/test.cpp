@@ -37,8 +37,8 @@ int main(int argv, char **args)
     }
 
     SDL_Rect rect1;
-    rect1.h = 79;
-    rect1.w = 79;
+    rect1.h = 80;
+    rect1.w = 80;
     rect1.x = 50;
     rect1.y = 50;
 
@@ -49,38 +49,14 @@ int main(int argv, char **args)
 
     while (isRunning)
     {
-        /*while (SDL_PollEvent(&event))
+        while (SDL_PollEvent(&event))
         {
             switch (event.type)
             {
             case SDL_QUIT:
                 isRunning = false;
                 break;
-
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym)
-                {
-                case SDLK_ESCAPE:
-                    isRunning = false;
-                    break;
-                case SDLK_RIGHT:
-                    rect1.x += 5;
-                    break;
-                case SDLK_LEFT:
-                    rect1.x -= 5;
-                    break;
-                case SDLK_UP:
-                    rect1.y -= 5;
-                    break;
-                case SDLK_DOWN:
-                    rect1.y += 5;
-                    break;
-                }
             }
-        }*/
-
-        while (SDL_PollEvent(&event))
-        {
         }
 
         const Uint8 *keystates = SDL_GetKeyboardState(NULL);
@@ -91,7 +67,7 @@ int main(int argv, char **args)
         if (keystates[SDL_SCANCODE_UP])
             rect1.y -= 5;
         if (keystates[SDL_SCANCODE_DOWN])
-            rect1.y = 5;
+            rect1.y += 5;
         if (keystates[SDL_SCANCODE_ESCAPE])
             isRunning = false;
 
