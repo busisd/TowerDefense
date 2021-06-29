@@ -77,6 +77,7 @@ int main(int argv, char **args)
         SDL_Delay((1.0 / 60) * 1000);
     }
 
+    SDL_DestroyTexture(sprite1);
     destruct(window, renderer);
 
     return 0;
