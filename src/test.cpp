@@ -44,6 +44,8 @@
 //   SDL_RenderCopy(renderer, sprite1, NULL, &rect1);
 //   SDL_RenderPresent(renderer);
 
+//   const Uint8 *keystates = SDL_GetKeyboardState(NULL);
+
 //   while (isRunning) {
 //     while (SDL_PollEvent(&event)) {
 //       switch (event.type) {
@@ -53,7 +55,6 @@
 //       }
 //     }
 
-//     const Uint8 *keystates = SDL_GetKeyboardState(NULL);
 //     if (keystates[SDL_SCANCODE_LEFT])
 //       rect1.x -= 5;
 //     if (keystates[SDL_SCANCODE_RIGHT])
