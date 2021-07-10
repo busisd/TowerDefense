@@ -45,7 +45,7 @@ int main(int argv, char **args) {
       simulationTime += frameTime;
     }
 
-    renderer.render(simulation);  //TODO: Interpolation maybe
+    renderer.render(simulation);  //TODO?: Interpolation, eventually
   }
 
   inputs.cleanup();

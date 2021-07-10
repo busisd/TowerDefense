@@ -36,7 +36,8 @@ class Path {
 
 enum class EnemyType {
   Smiley,
-  Goblin
+  Goblin,
+  Monkey
 };
 
 struct EnemyData {
@@ -47,7 +48,8 @@ struct EnemyData {
 
 const std::unordered_map<EnemyType, EnemyData> kEnemyStats = {
     {EnemyType::Smiley, (EnemyData){EnemyType::Smiley, 2.5, 50}},
-    {EnemyType::Goblin, (EnemyData){EnemyType::Goblin, 1.3, 100}}};
+    {EnemyType::Goblin, (EnemyData){EnemyType::Goblin, 1.3, 100}},
+    {EnemyType::Monkey, (EnemyData){EnemyType::Monkey, 3.5, 30}}};
 
 class Enemy {
  public:
@@ -90,6 +92,7 @@ class TDSimulation {
   int playerY;
   Path path_;
   std::vector<Enemy> enemies_;
+  int total_updates_;
 };
 
 }  // namespace TowerDefense

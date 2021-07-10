@@ -127,14 +127,18 @@ TowerDefense::TDSimulation::TDSimulation(std::vector<std::pair<double, double>> 
   enemies_.emplace_back(kEnemyStats.find(EnemyType::Smiley)->second);
   enemies_.emplace_back(kEnemyStats.find(EnemyType::Goblin)->second);
   enemies_.at(2).setDist(100);
+  enemies_.emplace_back(kEnemyStats.find(EnemyType::Monkey)->second);
 }
 
 void TowerDefense::TDSimulation::initialize() {
   playerX = 50;
   playerY = 50;
+  total_updates_ = 0;
 }
 
 void TowerDefense::TDSimulation::update(TDInputs &inputs) {
+  total_updates_++;
+
   if (inputs.keystates[SDL_SCANCODE_LEFT])
     playerX -= 5;
   if (inputs.keystates[SDL_SCANCODE_RIGHT])
