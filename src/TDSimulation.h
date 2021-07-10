@@ -1,6 +1,7 @@
 #ifndef TD_SIMULATION_H
 #define TD_SIMULATION_H
 
+#include <unordered_map>
 #include <vector>
 
 #include "./TDInputs.h"
@@ -33,6 +34,48 @@ class Path {
   double pathLength_;
 };
 
+enum class EnemyType {
+  Smiley,
+  Goblin
+};
+
+struct EnemyData {
+  EnemyType type;
+  double speed;
+  double maxHealth;
+};
+
+const std::unordered_map<EnemyType, EnemyData> kEnemyStats = {
+    {EnemyType::Smiley, (EnemyData){EnemyType::Smiley, 2.5, 50}},
+    {EnemyType::Goblin, (EnemyData){EnemyType::Goblin, 1.3, 100}}};
+
+class Enemy {
+ public:
+  Enemy(EnemyData data);
+
+  double Move();
+  double TakeDamage(double damageAmount);
+
+  EnemyType getType();
+  double getDist();
+  double getSpeed();
+  double getMaxHealth();
+  double getCurrentHealth();
+
+  void setType(EnemyType type);
+  void setDist(double dist);
+  void setSpeed(double speed);
+  void setMaxHealth(double maxHealth);
+  void setCurrentHealth(double currentHealth);
+
+ private:
+  EnemyType type_;
+  double dist_;
+  double speed_;
+  double max_health_;
+  double current_health_;
+};
+
 class TDSimulation {
  public:
   TDSimulation(std::vector<std::pair<double, double>> path);
@@ -46,7 +89,7 @@ class TDSimulation {
   int playerX;
   int playerY;
   Path path_;
-  int enemyDist_;
+  std::vector<Enemy> enemies_;
 };
 
 }  // namespace TowerDefense

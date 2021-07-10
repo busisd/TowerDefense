@@ -64,15 +64,74 @@ double TowerDefense::Path::getLength() {
   return pathLength_;
 }
 
+// Enemy
+
+TowerDefense::Enemy::Enemy(EnemyData data) {
+  type_ = data.type;
+  max_health_ = data.maxHealth;
+  current_health_ = max_health_;
+  speed_ = data.speed;
+  dist_ = 0;
+}
+
+double TowerDefense::Enemy::Move() {
+  dist_ += speed_;
+  return dist_;
+}
+
+double TowerDefense::Enemy::TakeDamage(double damageAmount) {
+  current_health_ -= damageAmount;
+  return current_health_;
+}
+
+TowerDefense::EnemyType TowerDefense::Enemy::getType() {
+  return type_;
+}
+double TowerDefense::Enemy::getDist() {
+  return dist_;
+}
+double TowerDefense::Enemy::getSpeed() {
+  return speed_;
+}
+double TowerDefense::Enemy::getMaxHealth() {
+  return max_health_;
+}
+double TowerDefense::Enemy::getCurrentHealth() {
+  return current_health_;
+}
+
+void TowerDefense::Enemy::setType(EnemyType type) {
+  type_ = type;
+}
+
+void TowerDefense::Enemy::setDist(double dist) {
+  dist_ = dist;
+}
+
+void TowerDefense::Enemy::setSpeed(double speed) {
+  speed_ = speed;
+}
+
+void TowerDefense::Enemy::setMaxHealth(double maxHealth) {
+  max_health_ = maxHealth;
+}
+
+void TowerDefense::Enemy::setCurrentHealth(double currentHealth) {
+  current_health_ = currentHealth;
+}
+
 // Simulation
 
 TowerDefense::TDSimulation::TDSimulation(std::vector<std::pair<double, double>> path) : path_(path) {
+  enemies_.emplace_back(kEnemyStats.find(EnemyType::Goblin)->second);
+  enemies_.emplace_back(kEnemyStats.find(EnemyType::Smiley)->second);
+  enemies_.emplace_back(kEnemyStats.find(EnemyType::Goblin)->second);
+  enemies_.at(2).setDist(100);
 }
 
 void TowerDefense::TDSimulation::initialize() {
   playerX = 50;
   playerY = 50;
-  enemyDist_ = 0;
 }
 
 void TowerDefense::TDSimulation::update(TDInputs &inputs) {
@@ -85,8 +144,10 @@ void TowerDefense::TDSimulation::update(TDInputs &inputs) {
   if (inputs.keystates[SDL_SCANCODE_DOWN])
     playerY += 5;
 
-  enemyDist_ += 3;
-  if (enemyDist_ > path_.getLength()) enemyDist_ -= path_.getLength();
+  for (Enemy &enemy : enemies_) {
+    double newDistance = enemy.Move();
+    if (newDistance > path_.getLength()) enemy.setDist(0);
+  }
 }
 
 void TowerDefense::TDSimulation::cleanup() {

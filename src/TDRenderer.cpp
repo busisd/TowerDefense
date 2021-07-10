@@ -4,58 +4,61 @@
 
 void TowerDefense::TDRenderer::initialize() {
   SDL_Init(SDL_INIT_EVERYTHING);
-  this->window = SDL_CreateWindow("Tower Defense", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
-  this->renderer = SDL_CreateRenderer(window, -1, 0);
+  this->window_ = SDL_CreateWindow("Tower Defense", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+  this->renderer_ = SDL_CreateRenderer(window_, -1, 0);
 
-  // TODO: Initialize all the sprites into an undordered_map
+  for (auto enemy : kEnemyFilenames) {
+    SDL_Surface *sprite_surface = SDL_LoadBMP(enemy.second.c_str());
+    if (sprite_surface == nullptr) {
+      std::cerr << "Error: could not load sprite img file: " << enemy.second << std::endl;
+      //TODO: return exit code on error
+    }
+    SDL_Texture *sprite_texture = SDL_CreateTextureFromSurface(renderer_, sprite_surface);
+    SDL_FreeSurface(sprite_surface);
+    if (sprite_texture == nullptr) {
+      std::cerr << "Error: could not convert surface " << enemy.second << "to texture" << std::endl;
+      //TODO: return exit code on error
+    }
 
-  // temp
-  SDL_Surface *sprite1_surface = SDL_LoadBMP("./img/sprite1.bmp");
-  this->sprite1 = SDL_CreateTextureFromSurface(renderer, sprite1_surface);
-  if (sprite1_surface == nullptr) {
-    std::cerr << "Error: could not load sprite1" << std::endl;
+    sprites_.emplace(enemy.first, sprite_texture);
   }
-  SDL_FreeSurface(sprite1_surface);
-  if (sprite1 == nullptr) {
-    std::cerr << "Error: could not turn sprite1 surface into texture" << std::endl;
-  }
-  rect1.h = 80;
-  rect1.w = 80;
-  // end temp
 
-  SDL_SetRenderDrawColor(renderer, 176, 245, 236, 255);
+  rect_.h = 80;
+  rect_.w = 80;
+  SDL_SetRenderDrawColor(renderer_, 176, 245, 236, 255);
 }
 
 void TowerDefense::TDRenderer::render(TDSimulation &game) {
-  SDL_SetRenderDrawColor(renderer, 176, 245, 236, 255);
-  SDL_RenderClear(renderer);
+  SDL_SetRenderDrawColor(renderer_, 176, 245, 236, 255);
+  SDL_RenderClear(renderer_);
 
-  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
   for (int i = 0; i < game.path_.points_.size() - 1; i++) {
     Point p1 = game.path_.points_[i];
     Point p2 = game.path_.points_[i + 1];
-    SDL_RenderDrawLineF(renderer, p1.getX(), p1.getY(), p2.getX(), p2.getY());
+    SDL_RenderDrawLineF(renderer_, p1.getX(), p1.getY(), p2.getX(), p2.getY());
   }
 
-  // TODO: Render all the sprites
-  // for (sprite : sprites) {
-  rect1.x = game.playerX;
-  rect1.y = game.playerY;
-  SDL_RenderCopy(renderer, sprite1, NULL, &rect1);
+  rect_.x = game.playerX;
+  rect_.y = game.playerY;
+  SDL_RenderCopy(renderer_, sprites_.find(EnemyType::Smiley)->second, NULL, &rect_);
 
-  Point enemyPosition = game.path_.PointAt(game.enemyDist_);
-  rect1.x = enemyPosition.getX() - rect1.w / 2;
-  rect1.y = enemyPosition.getY() - rect1.h / 2;
-  SDL_RenderCopy(renderer, sprite1, NULL, &rect1);
-  //}
+  for (Enemy enemy : game.enemies_) {
+    Point enemyPosition = game.path_.PointAt(enemy.getDist());
+    rect_.x = enemyPosition.getX() - rect_.w / 2;
+    rect_.y = enemyPosition.getY() - rect_.h / 2;
+    SDL_RenderCopy(renderer_, sprites_.find(enemy.getType())->second, NULL, &rect_);
+  }
 
-  SDL_RenderPresent(renderer);
+  SDL_RenderPresent(renderer_);
 }
 
 void TowerDefense::TDRenderer::cleanup() {
-  // TODO: Free and destroy all the sprites
+  for (auto sprite : sprites_) {
+    SDL_DestroyTexture(sprite.second);
+  }
 
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
+  SDL_DestroyRenderer(renderer_);
+  SDL_DestroyWindow(window_);
   SDL_Quit();
 }

@@ -9,9 +9,10 @@
 
 namespace TowerDefense {
 
-enum SPRITE_ENUM {
-  SmileSprite
-};
+// TODO?: Possibly include img size here
+const std::unordered_map<EnemyType, std::string> kEnemyFilenames = {
+    {EnemyType::Smiley, "./img/smiley.bmp"},
+    {EnemyType::Goblin, "./img/goblin.bmp"}};
 
 class TDRenderer {
  public:
@@ -22,13 +23,10 @@ class TDRenderer {
   void cleanup();
 
  private:
-  SDL_Window *window;
-  SDL_Renderer *renderer;
-  std::unordered_map<SPRITE_ENUM, SDL_Texture *> sprites;
-
-  // temp:
-  SDL_Texture *sprite1;
-  SDL_Rect rect1;
+  SDL_Window *window_;
+  SDL_Renderer *renderer_;
+  std::unordered_map<EnemyType, SDL_Texture *> sprites_;
+  SDL_Rect rect_;
 };
 
 }  // namespace TowerDefense
