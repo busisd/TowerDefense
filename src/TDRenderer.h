@@ -10,14 +10,9 @@
 namespace TowerDefense {
 
 // TODO?: Possibly include img size here
-const std::unordered_map<EnemyType, std::string> kEnemyFilenames = {
-    {EnemyType::Smiley, "./img/smiley.bmp"},
-    {EnemyType::Monkey, "./img/monkey0.bmp"},
-    {EnemyType::Goblin, "./img/goblin0.bmp"}};
-
-const std::unordered_map<EnemyType, std::vector<std::string>> kEnemyFilenames2 = {
+const std::unordered_map<EnemyType, std::vector<std::string>> kEnemyFilenames = {
     {EnemyType::Smiley, {"./img/smiley.bmp"}},
-    {EnemyType::Monkey, {"./img/monkey0.bmp", "./img/monkey1.bmp", "./img/monkey2.bmp"}},
+    {EnemyType::Monkey, {"./img/monkey0.bmp", "./img/monkey1.bmp", "./img/monkey2.bmp", "./img/monkey1.bmp"}}, //TODO: This is wasteful, implement patterns/timings for this
     {EnemyType::Goblin, {"./img/goblin0.bmp", "./img/goblin1.bmp"}}};
 
 class AnimatedSprite {
@@ -30,21 +25,19 @@ class AnimatedSprite {
  private:
   EnemyType type_;
   std::vector<SDL_Texture *> frames_;
+  SDL_Texture * test1;
 };
 
 class TDRenderer {
  public:
   void initialize();
-
   void render(TDSimulation &game);
-
   void cleanup();
 
  private:
   SDL_Window *window_;
   SDL_Renderer *renderer_;
-  // std::unordered_map<EnemyType, AnimatedSprite> sprites_;
-  std::unordered_map<EnemyType, SDL_Texture *> sprites_;
+  std::unordered_map<EnemyType, AnimatedSprite *> sprites_;
   SDL_Rect rect_;
 };
 

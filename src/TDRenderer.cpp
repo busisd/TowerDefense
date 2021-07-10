@@ -22,6 +22,7 @@ SDL_Texture *LoadTexture(std::string filename, SDL_Renderer *renderer) {
 
 TowerDefense::AnimatedSprite::AnimatedSprite(EnemyType type, std::vector<std::string> frameFilenames, SDL_Renderer *renderer) {
   type_ = type;
+  // std::cout << "Constructing! Type: " << (int) type_ << std::endl;
 
   for (std::string filename : frameFilenames) {
     SDL_Texture *frameTexture = LoadTexture(filename, renderer);
@@ -30,18 +31,17 @@ TowerDefense::AnimatedSprite::AnimatedSprite(EnemyType type, std::vector<std::st
 }
 
 TowerDefense::AnimatedSprite::~AnimatedSprite() {
+  // std::cout << "Destructing! Type: " << (int) type_ << std::endl;
   for (SDL_Texture *texture : frames_) {
     SDL_DestroyTexture(texture);
   }
 }
 
 SDL_Texture *TowerDefense::AnimatedSprite::GetTexture(int frameNum) {
-  std::cout << frames_.size() << std::endl;
   if (frames_.size() == 1) return frames_.at(0);
 
-
-
-  return frames_.at(0);
+  int whichFrame = frameNum / (48 / frames_.size()) % frames_.size();
+  return frames_.at(whichFrame);
 }
 
 // TDRenderer
@@ -52,8 +52,7 @@ void TowerDefense::TDRenderer::initialize() {
   this->renderer_ = SDL_CreateRenderer(window_, -1, 0);
 
   for (auto enemy : kEnemyFilenames) {
-    // AnimatedSprite newSprite = AnimatedSprite(enemy.first, enemy.second, renderer_);
-    SDL_Texture *newSprite = LoadTexture(enemy.second, renderer_);
+    AnimatedSprite *newSprite = new AnimatedSprite(enemy.first, enemy.second, renderer_);
     sprites_.emplace(enemy.first, newSprite);
   }
 
@@ -75,13 +74,13 @@ void TowerDefense::TDRenderer::render(TDSimulation &game) {
 
   rect_.x = game.playerX;
   rect_.y = game.playerY;
-  SDL_RenderCopy(renderer_, sprites_.find(EnemyType::Smiley)->second, NULL, &rect_);
+  SDL_RenderCopy(renderer_, sprites_.find(EnemyType::Smiley)->second->GetTexture(game.total_updates_), NULL, &rect_);
 
   for (Enemy enemy : game.enemies_) {
     Point enemyPosition = game.path_.PointAt(enemy.getDist());
     rect_.x = enemyPosition.getX() - rect_.w / 2;
     rect_.y = enemyPosition.getY() - rect_.h / 2;
-    SDL_RenderCopy(renderer_, sprites_.find(enemy.getType())->second, NULL, &rect_);
+    SDL_RenderCopy(renderer_, sprites_.find(enemy.getType())->second->GetTexture(game.total_updates_), NULL, &rect_);
   }
 
   SDL_RenderPresent(renderer_);
@@ -89,7 +88,7 @@ void TowerDefense::TDRenderer::render(TDSimulation &game) {
 
 void TowerDefense::TDRenderer::cleanup() {
   for (auto sprite : sprites_) {
-    SDL_DestroyTexture(sprite.second);
+    delete sprite.second;
   }
 
   SDL_DestroyRenderer(renderer_);
