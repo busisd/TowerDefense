@@ -2,6 +2,7 @@
 #define TD_RENDERER_H
 
 #include <SDL2/SDL.h>
+#include <string>
 
 #include <unordered_map>
 
